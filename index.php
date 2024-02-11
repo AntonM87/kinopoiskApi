@@ -35,39 +35,57 @@ require_once "systems/Router.php";
 //    $errors[] = $exception ->getMessage();
 //}
 
-//if (key_exists('PATH_INFO',$_SERVER)){
+//$url = key($_GET);
+//$r = new Router();
 //
-//}
+//$r->addRoute('/','index.php');
+//$r->addRoute('','index.php');
+//$r->addRoute('/film','film.php');
+//$r->addRoute('/person','person.php');
+//
+//$r->route('/'.$url);
 
-//$url = trim($_SERVER['PATH_INFO'],"/");
-//echo $url;
+require_once "core/func.php";
 
-    echo "<pre>";
-    print_r($_SERVER);
-    echo "</pre>";
+define("APP", __DIR__);
+define("PAGES", __DIR__ . '/pages');
+define("PATH", 'http://api');
+const DB_SERVER = 'localhost';
+const DB_USER = 'root';
+const DB_NAME = 'kinopoisk';
+const DB_PASS = '';
+const PAGE_SIZE = 3;
 
-?>
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-<?php
-echo "Hello world";
-//if (!empty($errors)) {
-//    echo "<pre>";
-//    print_r($errors);
-//    echo "</pre>";
-//} else {
-//    echo "<pre>";
-//    print_r($row);
-//    echo "</pre>";
-//}
-?>
-</body>
-</html>
+$errors = [];
+
+$link = mysqliConnect();
+$totalPages = getPagesCount($link);
+
+$pagesCount = ceil($totalPages/PAGE_SIZE);
+
+$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+
+if ($page < 1 || $page > $pagesCount) abort(404);
+$start = ($page - 1) * PAGE_SIZE;
+
+showPaginationBar($pagesCount);
+$arrFilms = showFilmsOnPage($link,$start,PAGE_SIZE);
+
+echo "<br>";
+showFilms($arrFilms);
+
+$requestUri = parse_url($_SERVER['REQUEST_URI']);
+
+$url = trim($requestUri['path'],'/');
+
+if ($url === ''){
+    require PAGES . "/main.php";
+} else if ($url == "film"){
+    require PAGES . "/film.php";
+} else if ($url == "person"){
+    require PAGES . "/person.php";
+} else {
+    http_response_code(404);
+    require "404.php";
+    exit();
+}
