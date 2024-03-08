@@ -42,7 +42,7 @@ function showPaginationBar(int $count):void
         echo "<a href='?page=$i'>$i</a> ";
     }
 }
-function showFilmsOnPage($link,$start, $pageSize):array
+function showFilmsOnPage($link,$start,$pageSize):array
 {
     try {
         $queryString = "SELECT filmName FROM films LIMIT $start, $pageSize";
