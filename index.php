@@ -1,19 +1,5 @@
 <?php
 
-//const DB_SERVER = 'localhost';
-//const DB_USER = 'root';
-//const DB_NAME = 'kinopoisk';
-//const DB_PASS = '';
-//$connect = null;
-//$errors = [];
-//
-//try {
-//    $link = mysqli_connect(DB_SERVER, DB_USER, DB_PASS);
-//    mysqli_select_db($link,DB_NAME);
-//} catch (mysqli_sql_exception $exception){
-//    $errors[] = $exception ->getMessage();
-//}
-//
 //try {
 //    $queryString = "SELECT persons.personId, persons.personName, films.filmId, films.filmName FROM persons
 //                    LEFT JOIN filmspersons ON persons.personId = filmspersons.personId
@@ -49,25 +35,20 @@ require "controllers/func.php";
 define("APP", __DIR__);
 define("PAGES", __DIR__ . '/pages');
 define("CONFIG", __DIR__ . '/config');
+define("CORE", __DIR__ . '/core');
 define("CONTROLLERS", __DIR__ . '/controllers');
 define("PATH", 'http://api');
-const DB_SERVER = 'localhost';
-const DB_USER = 'root';
-const DB_NAME = 'kinopoisk';
-const DB_PASS = '';
 const PAGE_SIZE = 3;
 
 $errors = [];
 
-spl_autoload_register(function ($class){
+spl_autoload_register(function ($class) {
     if (!is_file(CONTROLLERS . "/$class.php")) exit("Class $class not found");
-
-
-        if (class_exists($class, false)){
-        include "./controllers/$class.php";
-    }else(
+    if (!class_exists($class, false)) {
+        include CONTROLLERS . "/$class.php";
+    } else(
         exit("Module $class not found")
-        );
+    );
 });
 
 

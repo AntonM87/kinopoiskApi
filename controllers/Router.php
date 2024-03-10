@@ -2,42 +2,42 @@
 
 class Router{
     public array $routes = [];
-    protected string $uri = '';
-    protected $method;
+    protected string $url = '';
+    protected mixed $method;
 
     public function __construct()
     {
-        $this->uri = trim(parse_url($_SERVER['REQUEST_URI'])['path'],'/');
-        $this->method = $_SERVER['REQUEST_METHOD'];
+        $this->url = trim(parse_url($_SERVER['REQUEST_URI'])['path'],'/');
+        $this->method = $_POST['_method'] ?? $_SERVER['REQUEST_METHOD'];
     }
-    public function match():void
+    public function matchRoute():void
     {
         foreach ($this->routes as $route){
-            if ( ($route['uri'] == $this->uri) && ($route['method'] == strtoupper($this->method))){
-                require $route['controller'];
+            if ( ($route['url'] == $this->url) && ($route['method'] == strtoupper($this->method))){
+                require $route['controllers'];
                 return;
             }
         }
         abort(404);
     }
-    public function add($uri, $controller, $method):void
+    public function add($url, $controller, $method):void
     {
         $this->routes[] = [
-            'uri' => $uri,
-            'controller' => $controller,
+            'url' => $url,
+            'controllers' => $controller,
             'method' => $method,
         ];
     }
-    public function get($uri, $controller):void
+    public function get($url, $controller):void
     {
-        $this->add($uri, $controller, 'GET');
+        $this->add($url, $controller, 'GET');
     }
-    public function post($uri, $controller):void
+    public function post($url, $controller):void
     {
-        $this->add($uri, $controller, 'POST');
+        $this->add($url, $controller, 'POST');
     }
-    public function delete($uri, $controller):void
+    public function delete($url, $controller):void
     {
-        $this->add($uri, $controller, 'DELETE');
+        $this->add($url, $controller, 'DELETE');
     }
 }

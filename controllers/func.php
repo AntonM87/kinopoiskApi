@@ -8,23 +8,30 @@ function dd($var):void
     exit();
 }
 
-function abort($errorNum):void
+function getFilmInfo($res_arr):array
 {
+    $result = [];
+    $result[0]['filmId'] = $res_arr[0]['filmId'];
+    $result[0]['filmName'] = $res_arr[0]['filmName'];
+    $result['persons'] = [];
+    foreach ($res_arr as $film)
+    {
+        $result['persons'][] = [
+            'personId' => $film['personId'],
+            'personName' => $film['personName']
+        ];
+    }
+    return $result;
+}
+function abort($errorNum = 404):void
+{
+    if ($errorNum == 404){
+        require '404.php';
+    }
     http_response_code($errorNum);
-    require '404.php';
     exit();
 }
 
-function mysqliConnect():mixed
-{
-    try {
-        $link = mysqli_connect(DB_SERVER, DB_USER, DB_PASS);
-        mysqli_select_db($link, DB_NAME);
-    } catch (mysqli_sql_exception $exception) {
-        $errors[] = $exception->getMessage();
-    }
-    return $link;
-}
 function getPagesCount($link):int
 {
     try{
